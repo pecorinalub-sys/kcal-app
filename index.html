@@ -116,11 +116,10 @@
 </head>
 <body>
 <h2>🍽 Мой дневник</h2>
-<p><b id="total">Съедено: 0 ккал</b></p>
 <input id="name" placeholder="Что съели?">
 <input id="kcal" type="number" inputmode="numeric" placeholder="Калории (ккал)">
-<button onclick="add()">＋ Добавить</button>
-<button onclick="clearAll()" style="background:#c0392b">Очистить день</button>
+<button class="add-btn" onclick="add()">+ Добавить</button>
+<button class="clear-btn" onclick="clearAll()" style="background:#d32f2f; color:#fff;">Очистить день</button>
 <!-- Прогресс бар -->
 <div class="progress-text" id="progress-text">Загрузка...</div>
 <div class="progress-container">
@@ -132,9 +131,7 @@
 
 <!-- Список -->
 <ul id="list"></ul>
-
-<ul id="list"></ul>
-
+  
 <script>
   const tg = window.Telegram.WebApp;
   tg.ready();  // приложение загрузилось
@@ -154,20 +151,7 @@
     localStorage.setItem('day', JSON.stringify(items));
     render();
   }
-  function render() {
-    const list = document.getElementById('list');
-    list.innerHTML = '';
-    let total = 0;
-    items.forEach((it, i) => {
-      total += it.k;
-      const li = document.createElement('li');
-      li.textContent = `${it.n} — ${it.k} ккал`;
-      list.appendChild(li);
-    });
-    document.getElementById('total').textContent = `Съедено: ${total} ккал`;
-    document.getElementById('name').value = '';
-    document.getElementById('kcal').value = '';
-  }
+  
   function render() {
   const list = document.getElementById('list');
   list.innerHTML = '';
@@ -200,7 +184,7 @@
   // Выводим итог текстом (на случай, если нет прогресс-бара)
   const totalSum = document.getElementById('total-sum');
   if (totalSum) {
-    totalSum.textContent = `Итого: \${total} ккал`;
+    totalSum.textContent = `Итого: ${total} ккал`;
   }
 }
 
