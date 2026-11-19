@@ -17,6 +17,102 @@
            color: var(--tg-theme-button-text-color, #fff); }
   li { padding: 6px 0; border-bottom: 1px solid #ddd33; }
 </style>
+  <style>
+  /* Общий фон в стиле "здорового питания" */
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    padding: 10px;
+    margin: 0;
+  }
+
+  /* Карточка для ввода данных */
+  .input-card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  /* Главная кнопка "Добавить" */
+  button {
+    background-color: #4CAF50; /* Цвет как у "здоровой еды" */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  /* Полоска прогресса (цель дня) */
+  .progress-container {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    height: 10px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background-color: #FF9800; /* Оранжевый, как предупреждение */
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  .progress-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 5px;
+  }
+
+  /* Список записей (карточки продуктов) */
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    background: white;
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 5px solid #4CAF50; /* Акцентная полоска слева */
+  }
+
+  .total-sum {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+    text-align: right;
+  }
+</style>
+  
 </head>
 <body>
 <h2>🍽 Мой дневник</h2>
@@ -25,6 +121,18 @@
 <input id="kcal" type="number" inputmode="numeric" placeholder="Калории (ккал)">
 <button onclick="add()">＋ Добавить</button>
 <button onclick="clearAll()" style="background:#c0392b">Очистить день</button>
+<!-- Прогресс бар -->
+<div class="progress-text" id="progress-text">Загрузка...</div>
+<div class="progress-container">
+  <div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<!-- Итого -->
+<div class="total-sum" id="total-sum"></div>
+
+<!-- Список -->
+<ul id="list"></ul>
+
 <ul id="list"></ul>
 
 <script>
@@ -60,7 +168,42 @@
     document.getElementById('name').value = '';
     document.getElementById('kcal').value = '';
   }
-  render();
+  function render() {
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  
+  let total = 0;
+  const dailyGoal = 2000; // Твоя дневная норма калорий
+
+  // Считаем общую сумму
+  items.forEach(it => {
+    total += it.k;
+  });
+
+  // Обновляем полоску прогресса
+  const percent = Math.min((total / dailyGoal) * 100, 100);
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  
+  if (progressBar) {
+    progressBar.style.width = percent + '%';
+    progressText.textContent = `Всего за день: ${total} ккал из ${dailyGoal} ккал`;
+  }
+
+  // Рисуем список
+  items.forEach(it => {
+    const li = document.createElement('li');
+    li.textContent = `${it.n} — ${it.k} ккал`;
+    list.appendChild(li);
+  });
+
+  // Выводим итог текстом (на случай, если нет прогресс-бара)
+  const totalSum = document.getElementById('total-sum');
+  if (totalSum) {
+    totalSum.textContent = `Итого: \${total} ккал`;
+  }
+}
+
 </script>
 </body>
 </html>
