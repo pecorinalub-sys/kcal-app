@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 16px;
+         background: var(--tg-theme-bg-color, #fff);
+         color: var(--tg-theme-text-color, #000); }
+  h2 { margin-top: 0; }
+  input { width: 100%; box-sizing: border-box; padding: 12px; margin: 6px 0;
+          border-radius: 10px; border: 1px solid #bbb; font-size: 16px; }
+  button { width: 100%; padding: 12px; margin: 6px 0; border-radius: 10px;
+           border: none; font-size: 16px; font-weight: 600;
+           background: var(--tg-theme-button-color, #2481cc);
+           color: var(--tg-theme-button-text-color, #fff); }
+  li { padding: 6px 0; border-bottom: 1px solid #ddd33; }
+</style>
+</head>
+<body>
+<h2>🍽 Мой дневник</h2>
+<p><b id="total">Съедено: 0 ккал</b></p>
+<input id="name" placeholder="Что съели?">
+<input id="kcal" type="number" inputmode="numeric" placeholder="Калории (ккал)">
+<button onclick="add()">＋ Добавить</button>
+<button onclick="clearAll()" style="background:#c0392b">Очистить день</button>
+<ul id="list"></ul>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready();  // приложение загрузилось
+  tg.expand(); // на весь экран
+
+  let items = JSON.parse(localStorage.getItem('day') || '[]');
+
+  function add() {
+    const n = document.getElementById('name').value.trim();
+    const k = parseInt(document.getElementById('kcal').value);
+    if (!n || !k) return;
+    items.push({ n, k });
+    save();
+  }
+  function clearAll() { items = []; save(); }
+  function save() {
+    localStorage.setItem('day', JSON.stringify(items));
+    render();
+  }
+  function render() {
+    const list = document.getElementById('list');
+    list.innerHTML = '';
+    let total = 0;
+    items.forEach((it, i) => {
+      total += it.k;
+      const li = document.createElement('li');
+      li.textContent = `${it.n} — ${it.k} ккал`;
+      list.appendChild(li);
+    });
+    document.getElementById('total').textContent = `Съедено: ${total} ккал`;
+    document.getElementById('name').value = '';
+    document.getElementById('kcal').value = '';
+  }
+  render();
+</script>
+</body>
+</html>
